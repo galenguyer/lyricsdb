@@ -15,18 +15,19 @@ else:
 
 APP.secret_key = APP.config['SECRET_KEY']
 
+COMMIT_HASH = None
+try:
+    COMMIT_HASH = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']) \
+                            .strip() \
+                            .decode('utf-8')
+# pylint: disable=bare-except
+except:
+    COMMIT_HASH = None
+
 @APP.route('/static/<path:path>', methods=['GET'])
 def _send_static(path):
     return send_from_directory('static', path)
 
 @APP.route('/')
 def _index():
-    commit_hash = None
-    try:
-        commit_hash = subprocess.check_output(['git', 'rev-parse', '--short', 'HEAD']) \
-                                .strip() \
-                                .decode('utf-8')
-    # pylint: disable=bare-except
-    except:
-        commit_hash = None
-    return render_template('home.html', commit_hash=commit_hash)
+    return render_template('home.html', commit_hash=COMMIT_HASH)
