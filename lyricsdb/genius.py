@@ -54,8 +54,8 @@ def search(term: str):
     Search for a term
     """
     original_term = term # pylint: disable=unused-variable
-    term = re.sub('[^a-zA-Z0-9 ]+', '', term).strip()
-    term = re.sub(' ', '+', term)
+    term = re.sub('[^a-zA-Z0-9 ]+', '', str(term)).strip()
+    term = re.sub(' ', '+', str(term))
     search_page = requests.get(f'https://genius.com/api/search/song?page=1&q={term}')
     if search_page.status_code != 200:
         raise Exception(f'Status code {search_page.status_code} for search term ' + \
