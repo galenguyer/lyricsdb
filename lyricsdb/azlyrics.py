@@ -4,7 +4,6 @@ lyric scraper for azlyrics.com
 
 import os
 import json
-import sys
 import re
 from json import JSONEncoder
 
@@ -49,38 +48,21 @@ class SearchResult:
         return f'{self.title} by {self.artist}'
 
 
-def eprint(*args, **kwargs):
-    """
-    Print the given message to stderr
-    """
-    print(*args, file=sys.stderr, **kwargs)
-
-
-def search(term: str) -> str:
+def search(term: str):
     """
     Search for a term
     """
-    original_term = term
+    original_term = term # pylint: disable=unused-variable
     term = re.sub('[^a-zA-Z0-9 ]+', '', term).strip()
     term = re.sub(' ', '+', term)
     search_page = requests.get(f'https://search.azlyrics.com/search.php?q={term}&w=songs&p=1')
     if search_page.status_code != 200:
-        eprint(f'Status code {search_page.status_code} for search term "{original_term}" ' + \
-            'indicates failure')
-        return None
+        raise Exception(f'Status code {search_page.status_code} for search term ' + \
+            '"{original_term}" indicates failure')
     parsed_page = BeautifulSoup(search_page.text, 'html.parser')
     search_results = parsed_page.find_all('td', attrs={'class': 'text-left visitedlyr'})
     results = [SearchResult(result) for result in search_results]
-    if len(results) == 0:
-        eprint(f'No songs found for query {original_term}')
-        sys.exit(1)
-    if len(results) == 1:
-        print(f'Only result found is {results[0]}')
-        return results[0].link
-    for num in range(1, min(16, len(results)+1)):
-        print(f'{num}. {results[num-1]}')
-    result = results[int(input('Select a number: '))-1]
-    return result.link
+    return results
 
 
 def download_url(url: str):
@@ -88,12 +70,10 @@ def download_url(url: str):
     Retrieve the page contents and parse out the lyrics from a given url
     """
     if not url.startswith('https://www.azlyrics.com/lyrics/'):
-        eprint(f'URL "{url}" does not appear to be a valid azlyrics url')
-        return None
+        raise Exception(f'URL "{url}" does not appear to be a valid azlyrics url')
     result = requests.get(url)
     if result.status_code != 200:
-        eprint(f'Status code {result.status_code} for url "{url}" indicates failure')
-        return None
+        raise Exception(f'Status code {result.status_code} for url "{url}" indicates failure')
     parsed_page = BeautifulSoup(result.text, 'html.parser')
     # lyrics are consistently on the 20th div in the page
     lyrics = parsed_page.find_all('div', limit=21)[-1].text.strip()
@@ -127,7 +107,6 @@ def save_to_file(song: Song):
     file = open(filename, 'w')
     json.dump(song, file, indent=4, cls=SongEncoder)
     file.close()
-    print('Lyrics saved to ' + filename)
 
 
 if __name__ == '__main__':

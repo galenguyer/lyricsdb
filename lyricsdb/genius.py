@@ -4,7 +4,6 @@ lyric scraper for genius.com
 
 import os
 import json
-import sys
 import re
 from json import JSONEncoder
 
@@ -50,38 +49,21 @@ class SearchResult:
         return f'{self.title} by {self.artist}'
 
 
-def eprint(*args, **kwargs):
-    """
-    Print the given message to stderr
-    """
-    print(*args, file=sys.stderr, **kwargs)
-
-
-def search(term: str) -> str:
+def search(term: str):
     """
     Search for a term
     """
-    original_term = term
+    original_term = term # pylint: disable=unused-variable
     term = re.sub('[^a-zA-Z0-9 ]+', '', term).strip()
     term = re.sub(' ', '+', term)
     search_page = requests.get(f'https://genius.com/api/search/song?page=1&q={term}')
     if search_page.status_code != 200:
-        eprint(f'Status code {search_page.status_code} for search term "{original_term}" ' + \
-            'indicates failure')
-        return None
+        raise Exception(f'Status code {search_page.status_code} for search term ' + \
+            '"{original_term}" indicates failure')
     parsed_page = json.loads(search_page.text)
     search_results = parsed_page['response']['sections'][0]['hits']
     results = [SearchResult(result) for result in search_results]
-    if len(results) == 0:
-        eprint(f'No songs found for query {original_term}')
-        sys.exit(1)
-    if len(results) == 1:
-        print(f'Only result found is {results[0]}')
-        return results[0].link
-    for num in range(1, min(16, len(results)+1)):
-        print(f'{num}. {results[num-1]}')
-    result = results[int(input('Select a number: '))-1]
-    return result.link
+    return results
 
 
 def download_url(url: str):
@@ -89,12 +71,10 @@ def download_url(url: str):
     Retrieve the page contents and parse out the lyrics from a given url
     """
     if not url.startswith('https://genius.com/'):
-        eprint(f'URL "{url}" does not appear to be a valid genius lyrics url')
-        return None
+        raise Exception(f'URL "{url}" does not appear to be a valid genius lyrics url')
     result = requests.get(url)
     if result.status_code != 200:
-        eprint(f'Status code {result.status_code} for url "{url}" indicates failure')
-        return None
+        raise Exception(f'Status code {result.status_code} for url "{url}" indicates failure')
     parsed_page = BeautifulSoup(result.text.replace(u'\u2018', '\'').replace(u'\u2019', '\''),
         'html.parser')
     song_lyrics = parsed_page.find_all('div', attrs={'class': 'lyrics'})[0].text.strip()
@@ -132,7 +112,6 @@ def save_to_file(song: Song):
     file = open(filename, 'w')
     json.dump(song, file, indent=4, cls=SongEncoder)
     file.close()
-    print('Lyrics saved to ' + filename)
 
 
 if __name__ == '__main__':
