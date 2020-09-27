@@ -23,7 +23,7 @@ class GeniusSearchResult:
         self.artist = result['primary_artist']['name'].encode('ascii', 'ignore').decode('utf-8')
 
     def __str__(self):
-        return f'{self.title} by {self.artist}'
+        return f'{self.title} by {self.artist} (via genius)'
 
 
 def search(term: str) -> [GeniusSearchResult]:

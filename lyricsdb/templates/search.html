@@ -9,17 +9,14 @@
     </head>
     <body>
         <div class="top">
-            <h1>Songs Go Brr</h1>
+            <h1>Search</h1>
         </div>
         {% if songs %}
         <div id="cards">
         {% for song in songs %}
             <div class="card">
-                <h2 class='title'><a href="{{ song['url'] }}">{{ song['title'] }} - {{ song['artist'] }}</a></h2>
-                <hr>
-                <p style="white-space: pre-wrap;">
-                    {{- song.get_short_lyrics() -}}
-                </p>
+                <h2 class='title'><a href="{{ song['link'] }}">{{ song }}</a></h2>
+                <a class="addbutton" href="/save?q={{ song['link'] }}">Add Song</a>
             </div>
         {% endfor %}
         </div>

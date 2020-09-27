@@ -21,7 +21,7 @@ class AzSearchResult:
         self.artist = result.find_all('b')[1].text
 
     def __str__(self):
-        return f'{self.title} by {self.artist}'
+        return f'{self.title} by {self.artist} (via azlyrics)'
 
 
 def search(term: str) -> [AzSearchResult]:

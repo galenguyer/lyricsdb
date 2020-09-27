@@ -37,6 +37,16 @@ def load_all() -> [Song]:
     return songs
 
 
+def addl(lo, lt):
+    l = []
+    for i in range(0, max(len(lo), len(lt))):
+        if i < len(lo):
+            l.append(lo[i])
+        if i < len(lt):
+            l.append(lt[i])
+    return l
+
+
 @APP.route('/static/<path:path>', methods=['GET'])
 def _send_static(path):
     return send_from_directory('static', path)
@@ -47,10 +57,17 @@ def _index():
     return render_template('home.html', songs=load_all(), commit_hash=COMMIT_HASH)
 
 
+@APP.route('/search')
+def _search():
+    return render_template('search.html', \
+        songs=addl(genius.search(request.args.get('q')), azlyrics.search(request.args.get('q'))), \
+        commit_hash=COMMIT_HASH)
+
+
 @APP.route('/save')
 def _save():
     song_url = request.args.get('q')
-    if song_url in [s['url'] for s in load_all()]:
+    if song_url in [s.url for s in load_all()]:
         return jsonify('already saved')
     if 'genius.com' in song_url:
         song = genius.download_url(song_url)
@@ -66,7 +83,7 @@ def _save():
 def _json_search():
     # pylint: disable=undefined-variable
     return jsonify([o.__dict__ for o in \
-        genius.search(request.args.get('q')) + azlyrics.search(request.args.get('q'))])
+        addl(genius.search(request.args.get('q')), azlyrics.search(request.args.get('q')))])
 
 
 @APP.route('/json/all')
