@@ -18,6 +18,11 @@ class Song:
         self.lyrics = lyrics
         self.url = url
 
+    def obj_creator(d):
+        return Song(d['title'], d['artist'], d['album'], d['release'], d['lyrics'], d['url'])
+
+    def get_short_lyrics(self):
+        return '\n'.join([line for line in self.lyrics.split('\n')][0:3])
 
     def save_to_file(self):
         """

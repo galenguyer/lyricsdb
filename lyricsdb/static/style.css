@@ -2,6 +2,7 @@ body {
     background-color: #eee;
     text-align: center;
     padding-top: 80px;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
 
 .top {
@@ -13,6 +14,23 @@ body {
     left: 0;
     top: 0;
     padding: .5rem 1rem;
+}
+
+#cards {
+    width: 90vw;
+    margin: 2em auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+.card {
+    max-width: 30vw;
+    padding: 1em;
+    border: 3px solid rgba(0,0,0,.3);
+    border-radius: 1em;
+}
+.card>p{
+    font-style: italic;
 }
 
 .git p {

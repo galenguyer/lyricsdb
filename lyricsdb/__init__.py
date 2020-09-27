@@ -33,7 +33,7 @@ def load_all() -> [Song]:
     songs = []
     for file in files:
         with open(file, 'r') as fh:
-            songs.append(json.loads(fh.read()))
+            songs.append(json.loads(fh.read(), object_hook=Song.obj_creator))
     return songs
 
 

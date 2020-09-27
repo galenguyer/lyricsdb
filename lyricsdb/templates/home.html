@@ -12,15 +12,17 @@
             <h1>Songs Go Brr</h1>
         </div>
         {% if songs %}
+        <div id="cards">
         {% for song in songs %}
             <div class="card">
                 <h2 class='title'><a href="{{ song['url'] }}">{{ song['title'] }} - {{ song['artist'] }}</a></h2>
                 <hr>
                 <p style="white-space: pre-wrap;">
-                    {{- song['lyrics'] -}}
+                    {{- song.get_short_lyrics() -}}
                 </p>
             </div>
         {% endfor %}
+        </div>
         {% endif %}
         {% if commit_hash %}
         <div class="git">
