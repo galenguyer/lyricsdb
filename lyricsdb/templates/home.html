@@ -11,6 +11,10 @@
         <div class="top">
             <h1>Songs Go Brr</h1>
         </div>
+        <form action="/search" method = "GET"> 
+            <input id="q" type="text" name="q"> 
+            <input type="submit" value="search"> 
+        </form> 
         {% if songs %}
         <div id="cards">
         {% for song in songs %}
