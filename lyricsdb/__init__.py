@@ -76,7 +76,7 @@ def _save():
     else:
         return jsonify('unknown, nothing done')
     song.save_to_file()
-    return redirect('/lyrics/' + s.id)
+    return redirect('/lyrics/' + song.id)
 
 
 @APP.route('/lyrics/<path:path>', methods=['GET'])
