@@ -2,6 +2,7 @@
 
 import os
 import subprocess
+import glob
 
 from flask import Flask, request, render_template, send_from_directory, jsonify
 
@@ -27,6 +28,14 @@ try:
 except:
     COMMIT_HASH = None
 
+def load_all() -> [Song]:
+    files = glob.glob("./lyrics/*.json")
+    songs = []
+    for file in files:
+        with open(file, 'r') as fh:
+            songs.append(json.loads(fh.read()))
+    return songs
+
 @APP.route('/static/<path:path>', methods=['GET'])
 def _send_static(path):
     return send_from_directory('static', path)
@@ -41,3 +50,23 @@ def _search():
     # pylint: disable=undefined-variable
     return jsonify([o.__dict__ for o in \
         genius.search(request.args.get('q')) + azlyrics.search(request.args.get('q'))])
+
+
+@APP.route('/save')
+def _save():
+    song_url = request.args.get('q')
+    if song_url in [s['url'] for s in load_all()]:
+        return jsonify('already saved')
+    if 'genius.com' in song_url:
+        song = genius.download_url(song_url)
+    elif 'azlyrics.com' in song_url:
+        song = azlyrics.download_url(song_url)
+    else:
+        return jsonify('unknown, nothing done')
+    song.save_to_file()
+    return jsonify(song.__dict__)
+
+
+@APP.route('/json/all')
+def _count():
+    return jsonify(load_all())
