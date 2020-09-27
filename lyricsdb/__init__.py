@@ -36,20 +36,15 @@ def load_all() -> [Song]:
             songs.append(json.loads(fh.read()))
     return songs
 
+
 @APP.route('/static/<path:path>', methods=['GET'])
 def _send_static(path):
     return send_from_directory('static', path)
 
+
 @APP.route('/')
 def _index():
-    return render_template('home.html', commit_hash=COMMIT_HASH)
-
-
-@APP.route('/search')
-def _search():
-    # pylint: disable=undefined-variable
-    return jsonify([o.__dict__ for o in \
-        genius.search(request.args.get('q')) + azlyrics.search(request.args.get('q'))])
+    return render_template('home.html', songs=load_all(), commit_hash=COMMIT_HASH)
 
 
 @APP.route('/save')
@@ -67,6 +62,13 @@ def _save():
     return jsonify(song.__dict__)
 
 
+@APP.route('/json/search')
+def _json_search():
+    # pylint: disable=undefined-variable
+    return jsonify([o.__dict__ for o in \
+        genius.search(request.args.get('q')) + azlyrics.search(request.args.get('q'))])
+
+
 @APP.route('/json/all')
-def _count():
+def _json_all():
     return jsonify(load_all())

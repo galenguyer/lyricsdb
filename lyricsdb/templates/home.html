@@ -9,8 +9,19 @@
     </head>
     <body>
         <div class="top">
-            <h3>Hello, World</h3>
+            <h1>Songs Go Brr</h1>
         </div>
+        {% if songs %}
+        {% for song in songs %}
+            <div class="card">
+                <h2 class='title'><a href="{{ song['url'] }}">{{ song['title'] }} - {{ song['artist'] }}</a></h2>
+                <hr>
+                <p style="white-space: pre-wrap;">
+                    {{- song['lyrics'] -}}
+                </p>
+            </div>
+        {% endfor %}
+        {% endif %}
         {% if commit_hash %}
         <div class="git">
             <p>
