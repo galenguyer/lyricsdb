@@ -9,21 +9,12 @@
     </head>
     <body>
         <div class="top">
-            <h1>Songs Go Brr</h1>
+            <h1>{{ song['title'] }}</h1>
+            <h2>{{ song['artist'] }}</h2>
         </div>
-        {% if songs %}
-        <div id="cards">
-        {% for song in songs %}
-            <div class="card">
-                <h2 class='title'><a href="/lyrics/{{ song.id }}">{{ song['title'] }} - {{ song['artist'] }}</a></h2>
-                <hr>
-                <p>
-                    {{- song.get_short_lyrics() -}}
-                </p>
-            </div>
-        {% endfor %}
-        </div>
-        {% endif %}
+        <p class="lyrics">
+            {{- song['lyrics'] -}}
+        </p>
         {% if commit_hash %}
         <div class="git">
             <p>

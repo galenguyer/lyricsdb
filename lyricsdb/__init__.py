@@ -81,7 +81,7 @@ def _save():
 
 @APP.route('/lyrics/<path:path>', methods=['GET'])
 def _lyrics_byid(path):
-    return jsonify([s for s in load_all() if s.id == path][0].__dict__)
+    return render_template('lyrics.html', song=[s for s in load_all() if s.id == path][0], commit_hash=COMMIT_HASH)
 
 
 @APP.route('/json/search')
