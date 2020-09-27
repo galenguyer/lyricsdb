@@ -4,7 +4,7 @@ import os
 import subprocess
 import glob
 
-from flask import Flask, request, render_template, send_from_directory, jsonify
+from flask import Flask, request, render_template, send_from_directory, jsonify, redirect
 
 from .azlyrics import *
 from .genius import *
@@ -68,7 +68,7 @@ def _search():
 def _save():
     song_url = request.args.get('q')
     if song_url in [s.url for s in load_all()]:
-        return jsonify('already saved')
+        return redirect('/lyrics/'+[s for s in load_all() if s.url == song_url][0].id)
     if 'genius.com' in song_url:
         song = genius.download_url(song_url)
     elif 'azlyrics.com' in song_url:
@@ -76,7 +76,12 @@ def _save():
     else:
         return jsonify('unknown, nothing done')
     song.save_to_file()
-    return jsonify(song.__dict__)
+    return redirect('/lyrics/' + s.id)
+
+
+@APP.route('/lyrics/<path:path>', methods=['GET'])
+def _lyrics_byid(path):
+    return jsonify([s for s in load_all() if s.id == path][0].__dict__)
 
 
 @APP.route('/json/search')
@@ -88,4 +93,4 @@ def _json_search():
 
 @APP.route('/json/all')
 def _json_all():
-    return jsonify(load_all())
+    return jsonify([o.__dict__ for o in load_all()])
