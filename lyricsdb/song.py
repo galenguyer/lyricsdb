@@ -3,6 +3,7 @@ provides song class
 """
 import os
 import json
+import uuid
 from json import JSONEncoder
 
 class Song:
@@ -17,9 +18,11 @@ class Song:
         self.release = release
         self.lyrics = lyrics
         self.url = url
+        self.id = uuid.uuid4().hex
 
     def obj_creator(d):
-        return Song(d['title'], d['artist'], d['album'], d['release'], d['lyrics'], d['url'])
+        s = Song(d['title'], d['artist'], d['album'], d['release'], d['lyrics'], d['url'])
+        s.id = d['id']
 
     def get_short_lyrics(self):
         return '\n'.join([line for line in self.lyrics.split('\n')][0:3])
