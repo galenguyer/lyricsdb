@@ -23,6 +23,7 @@ class Song:
     def obj_creator(d):
         s = Song(d['title'], d['artist'], d['album'], d['release'], d['lyrics'], d['url'])
         s.id = d['id']
+        return s
 
     def get_short_lyrics(self):
         return '\n'.join([line for line in self.lyrics.split('\n')][0:3])
